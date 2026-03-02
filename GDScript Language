@@ -1,0 +1,640 @@
+Godot Script Fundamental Tutorial Series
+
+-------Data Types-------
+    An attribute of data which tells the compiler/interpreter how the programmer intends to use the data. Data Types define the operations that can be done on the data, the meaning of the data, and the way values of that type can be stored.
+    1. Strings: "Hello World!"
+    2. Numbers/Integers: 0, -12, 200
+    3. Floats: 0.00, -12.00, 200.00
+    4. Booleans: true, false
+    5. Null: null
+
+-------Literal Value-------
+    A literal is a value that's written directly in the source code as opposed to being the result of some other expression (such as referencing a variable or a constant).
+
+-------Variable/Scalar-------
+    Is a storage address paired with an associated symbolic name, which contains a known/unknown quantity of information, often referred to as a value. You should use variables when you have that needs to change over the lifetime of the game/program.
+
+    Format for Declaring Variables:
+    var uniqueName (:Data Type) (= Literal/Data Object)
+
+    Examples:
+    var aString: String = 'hi friend'
+    var aNumber: int = 10
+    var aFloat: float = -12.0
+    var aBoolean: boolean = true
+
+    Or:
+    var aString := 'hi friend'
+    var aNumber := 10
+    var aFloat := -12.0
+    var aBoolean := true
+
+-------Memory Life Cycle-------
+    No matter the programming language, memory life cycle is the same. Memory is allocated by the operating system which allows your program to use it. All computers have memory, also known as RAM (Random Access Memory). Memory can be thought of aas an array of bytes.
+
+Adress | Value
+ 0x142 |
+ 0x144 |
+  ...  |
+ 0x148 |
+
+Use Memory
+    Read/write operations are happening as you are using the allocated memory, assigning and changing variable values in your script/code.
+
+Release Memory
+    When variable(s) are no longer in use, release the entire memory so that it is freed and can be used to allocate new memory. It depends on the programming language you are using whether this is done manually or automatically.
+
+General Tip for Memory
+    The less memory you use, the better it is in general. For games, using less memory takes into consideratiion the performance for users who are using lower size rams in computers.
+
+Going over Allocated Memory
+    If there is enough space, the operating system will allocate more memory from RAM to your application/game. If you go over the RAM limit, the operating system will start allocating memory to the Hard Drive/Solid State. Using the HD/SSD for memory is slower than using RAM.
+
+Basic Variable Process
+    var x = 2020
+    1. Allocate enough memory for the variable, in this case enough memory to hold an integer.
+    2. Assign the value 2020 to that memory address location.
+    3. Indicate that x points to that value.
+    4. Depending on the language, memory is freed when not in use.
+
+
+Variable Example Pt. 1 (C Language)
+    int x = 2020
+___________________
+         X
+___________________
+ Location | 0x142
+   Value  | 2020
+
+
+Variable Example Pt. 2 (C Language)
+    int x = 2020
+    int y = x
+    y = 0 #modified the value, not the location
+
+___________________
+         X
+___________________
+ Location | 0x142
+   Value  | 2020
+
+___________________
+         Y
+___________________
+ Location | 0x144
+   Value  | 0
+
+
+Variable Example Pt. 1 (Reference Counting)
+    var x = 2020
+____
+Name
+ X
+____________________
+   Object (0x144)
+   Type  |  Integer
+  Value  |   2020
+RefCount |    1
+
+    Object owns the memory address, the variable doesn't directly own any memory address.
+
+Variable Example Pt. 3 (Reference Counting)
+    var x = 2020
+    var y = x
+    y = 0
+
+Variable Example Pt. 3.5 (Reference Counting)
+____
+Name
+ X
+____________________
+   Object (0x144)
+   Type  |  Integer
+  Value  |   2020
+RefCount |    1
+
+____
+Name
+ Y
+____________________
+   Object (0x145)
+   Type  |  Integer
+  Value  |    0
+RefCount |    1
+
+Variable Example Pt. 4 (Reference Counting)
+    var x = 2020
+    var y = x
+    y = 0
+    x = 1
+
+Variable Example Pt. 4.5 (Reference Counting)
+____
+Name
+ X
+____________________
+   Object (0x146)
+   Type  |  Integer
+  Value  |    1
+RefCount |    1
+
+____
+Name
+ Y
+____________________
+   Object (0x146)
+   Type  |  Integer
+  Value  |    0
+RefCount |    1
+
+____________________
+   Object (0x144)
+   Type  |  Integer
+  Value  |   2020
+RefCount |    0
+
+GDScript Tip for Memory Management
+    Nodes are not refenced counted in the engine, this means that removing a node from the tree will not delete it (remove_child). To better manage nodes, create a pool of objects and re-use the node object, you can also explicitly destroy/free the node from memory by calling "queue_free()" in the "_exit_tree()" which is called when the node is removed from the tree.
+
+-------Operands-------
+    Operators: Are symbols used to manipulate and check operand values, they can be numerical, text, and Boolean values.
+    10 + 20
+    x - 1
+    1 + 2
+    x - y.
+
+    Assignment Operators: Assign a value to it's left operand based on the value of it's right operand.
+    x = x + y, x += y (Additional Assignment)
+    x = x - y, x -+ y (Subtraction Assignment)
+    x = x * y, x *= y (Multiplication Assignment)
+    x = x / y, x /= y (Division Assignment)
+    x = x % y, x %= y (Remainder Assignment)
+
+    Comparison Operators: Compares it's operands and returns a logical value based on whether the comparison is true.
+    x == 1 (are equal)
+    x != 1 (are not equal)
+    x > 1 (left is greater than right)
+    x < 1 (right is greater than left)
+    x >= 1 (left is greater than right, or equal)
+    x <= 1 (right is greater than left, or equal)
+
+    Logical Operators:
+    1. &&/AND: Will first check to see if the left operand can be converted to false. If it can, the value false will be returned. Otherwise, it will check to see if the second operand can be converted to false. If the second operand can be converted to false, it will return false. Otherwise, it will return true.
+    var x = true
+    x && 1 #returns true
+
+    2. ||/OR: Will return true as long as any of the operands can be converted to true, starting from the left most operand.
+    var x = false
+    x || 1 #returns true
+
+    3. !/NOT: Will return false if it's operand can be converted to true, otherwise, it will return true.
+    var x = false
+    !x #returns true
+
+-------Constants-------
+    A Constant is a value that never changes, each of them need a unique name or an error will be thrown. They're declared with:
+    const ValueNeverChanges = 1
+    You may also add a data type explicitly by adding a colon followed by the data type. Not necessary as the data type is inferred with the assigned value.
+    const ValueNeverChanges: int = 1
+    Constant Declaration Format:
+    const ValueName ( : Data Type) = Literal/Data Object
+    Constants are ready only, therefore modifications are not permitted after declaration and assignment.
+    Not permitted:
+    const ValueNeverChanges = 1
+    ValueNeverChanges = 100 #will throw an error
+    Pro's of Using Constant: Readable code, easier Debugging, save time when editing code.
+    You can use literals instead of constants. To the compiler it doesn't make a difference how values are given, however, for the sake of readable code and easier debugging you should use constants.
+    var playerSpeed = 5
+    var laserSpeed = 5
+    var boomerangSpeed = 5
+    var enemySpeed = 5
+    #5 is the main speed for game items, if you needed to change all the speed, you'd have to manualy change each single one, to avoid this, you can make a constant variable presenting the default speed.
+    const Speed = 5
+    var playerSpeed = Speed
+    var laserSpeed = Speed
+    var boomerangSpeed = Speed
+    var enemySpeed = Speed
+    #Another example of when to use variables and constants
+    const:
+    const playerName = "John"
+    var playerHealth: int = 100
+
+-------Comment-------
+# This is a comment
+
+"""
+This is a
+Multi-line
+Comment.
+"""
+
+    Types of Comments:
+    1. Methodology Description: Explains the code.
+    2. Meta-Data: Includes company name, fie name, the year script was created, names of people who maintain it, copyright, etc.
+    3. Debugging: Commenting print statements.
+    4. Code Description: Make others understand the intent of the line of code.
+
+-------Naming Convention Definition-------
+    Is a set of rules for choosing the character sequence to be used for identifiers which denote variables, types, functions, and other entities in source code and documentation.
+    Bad example: var x = 100
+    Good example: var playerHealth = 100
+    Greater example: var playerHealth: int = 100
+
+    CamelCase: mainPlayer
+    PascalCase: MainPlayer
+
+-------Conditional Statements-------
+    1. if/Elif/Else: Executes one block of statements if a certain condition is true and a second block of statements if it is false.
+    2. Single/Multiple: 
+    if <test>:
+            <statements>
+
+    if <test>:
+            <statement>
+    3. If/Elif Combo:
+    if <test>:
+            <statements>
+    elif <test>:
+            <statements>
+    4. If/Else:
+    if <test>:
+            <statements>
+    else:
+            <statements>
+    5. Basic If/Elif/Else Chain:
+    if <test>
+            <statements>
+    elif <test>
+            <statements>
+    #insert multiple elif statements here
+    else:
+         <statements>
+
+-------While Loops-------
+    Is a control flow statement that allows code to be executed repeatedly based on a given Boolean condition.
+    while <test>:
+        <statement>
+
+-------Infinite Loops/Endless Loops-------
+    Is a piece of coding that lacks a functional exit so that it repeats indefinitely. There are three types:
+    1. Fake: They give the impression that it is an infinite loop.
+    while (true):
+        break
+    2. Intended: Is an infinite loop where the user intentionally doesn't want the loop to end. (Like when you press play on Godot to run you game, the game will run infinitely unless you make it stop.)
+    3. Unintended: Is where the user made a mistake.
+
+-------For Loop-------
+    Is a control flow Statement which allows code to be executed repeatedly. Godot uses iterator based for loops, this type of for loop allows for the enumeration of sets of items other than number sequences. In Godot, a For Loop is used when you want to iterate through a range, such as numbers, arrays, tables. When looping through an array, the current element is stored in the loop variable, when iterating through a dictionary, the index is stored in the loop variable.
+    1. Basic For Loop
+    for <placeholder> in <range>
+        <block statement>
+    2. For Loop with a Number
+    for x in 10: #10 is the range
+        <block statement> #execute 10 times
+    When using numbers, the variable in the For Loop starts at 0, and increments until the variable is greater than or equal to the number used as the range.
+    3. For Loop with an Array
+    for x in arrayItem: #arrayItem is an array
+        <block statement> #executes for as many items in the array.
+    4. For Loop with a Dictionary:
+    for x in dictionaryItem: dictionaryItem is a dictionary
+    <block statement> #executes for all items in dictionary.
+
+    Example:
+
+var number: int = 10
+var array: = [1,2,3,4,5]
+var dictionary = {
+    "key1": "value1",
+    "key2": "value2"
+}
+
+func _ready():
+
+    print('for loop number')
+    for value in number:
+        print(value)
+
+    print('\n for loop array')
+    for element in array:
+        print(element)
+
+    print('\n for loop dictionary')
+    for key in dictionary:
+        print(key) #prints the key
+        print(dictionary[key]) #print out
+
+-------Match Statement-------
+    Is a type of selection control mechanism used to allow the value of a variable or expression to change the control flow of program execution via search and map. Basically you use a variable to 'match' a pattern and execute the code inside the match block statement. The patterns are matched in chronological order. If a pattern matches, the matched block will be executed. After the block of code has run, the match statement will exit. You can use the underscore '_' symbol at the bottom of a match statement to denote a default block statement to run. If you would like to continue after matching, use the 'continue' keyword. For example:
+    match x: #x is the value
+        1: #1 is the pattern
+            print("Hi Friend")
+        _: #_ is the pattern
+            print("_is a wildcard")
+    Types of Match Patterns:
+    1. Constant Pattern:
+    match x:
+        1:
+            print("Hi Friend")
+        "Hello":
+            print("_ is a wildcard")
+    2. Variable Pattern:
+    match x:
+        health:
+            print("printx == health")
+        name: print ("print x == name")
+    3. Wildcard Pattern: You use the underscore symbol '_', is used to match everything. Sometimes used as a "default" block, meaning it runs when all other test fail. Since match statements run in chronological order, it's best to use the wildcard pattern as your last pattern in the match statement chain.
+    match x:
+        _:
+            print("_is a wildcard")
+    4. Binding Pattern: Catches everything, but assigns the match value into avariable.
+    match x:
+        var newVar:
+            print("print value of x: " newVar)
+    5. Array Pattern: Every single element in the array is a pattern in itself, arrays can be nested, you can use sub-patterns inside array patterns. Array Patterns are tested, when the length of the array is tested, match fails if length of the value and pattern are different (Unless using the '..' sub-pattern which makes the pattern an open-ended array). Value and pattern array elements are tested, if they are different the match pattern will fail. For example:
+    match x:
+        []:
+            print("empty array")
+        [1,2,3,_, var lastElement]:
+            print("array")
+        [1,2,..]
+            print("open ended array")
+    6. Dictionary Pattern: Works just like the array pattern, except with dictionaries, all keys have to be constants, sub-patterns can be used on the dictionary values of the pattern. Dictionary Patterns are tested, when the length of the dictionary value is tested, match fails if length of the value and pattern are different (Unless using the '..' sub-pattern which makes the pattern an open-ended dictionary). Key & Value in dictionary are tested, if they are different the match pattern fails. For example:
+    match x:
+        {}:
+            print("empty dictionary")
+        {"key": "value", "key2": var lastElement}:
+            print("dictionary")
+        {"key": "value",..}:
+            print("Open ended dictionary")
+    7. Multiple Pattern: You can specify multiple patterns as long as they are separated by commas, the multiple pattern cannot have binding to them.
+    match x:
+        1,2,3,4,5:
+            print("it's a value from 1-5")
+
+-------Arrays-------
+    They're a collection of items stored at contiguous memory locations, arrays are used when you want to store multiple items toguether, in godot, arrays can contain elements of different data types, arrays, dictionaries, in the order of (0,1,2,3,4,5) and (-1, -2, -3, -4 ,-5). To declare an Array:
+    var emptyArray = [] #declare an empty array
+    var filledArray = [1,'hi',true] #declare array with data
+
+How to Retrieve Data from an Array
+    filledArray #get the entire array
+    filledArray[0] #get value of a specific element at index.
+
+Sub-Arrays
+    # create a sub-array
+    var filledArray = [[1,2],[3,4]] #Sub-Arrays
+    # to get a value from sub-array
+    filledArray[0][1] #output: 2
+
+Push and Pop Array Methosds Pt. 1
+    Push adds an element to eigther the beginning or the end of an array, removes and returns an element from the beginning or end of an array.
+    var arrays = [1,2,3,4,5]
+    arrays.pop_back() #[1,2,3,4]
+    arrays.pop_front() #[2,3,4]
+    arrays.push_back(5) #[2,3,4,5]
+    arrays.push_front(1) #[1,2,3,4,5]
+
+Clear an Array
+    var arrays = [1,2,3,4,5]
+    arrays = [] #one way to clear an array
+    arrays.resize(0) #another way to clear an array
+    arrays.clear() #yet another way to clear an array
+
+Duplicate an Array (Deep Copy)
+    var arrays = [1,2,3,4,5]
+    var duplicateArray = arrays.duplicate(true)
+    # to do a shallow copy, set the Boolean to false
+
+Deep Copy vs Shallow Copy
+    Deep Copy: All nested arrays and dictionaries are duplicated and will not be shared with the original array.
+    Shallow Copy: References to the original nested arrays and dictionaries are kept, so that modifying a sub-array or dictionary in the copy will also impact those referenced in the source array.
+
+Get Length of Array
+    var arrays = [1,2,3,4,5]
+    var length = arrays.size()
+
+-------Arrays-------
+    Arrays are a collection of items stored at contiguous memory locations. In Godot, arrays, like classes and dictionaries, are objects which are stored in memory.
+
+Single Dimension Assignment
+    var myArray = [1,2,3]
+
+Before We Begin
+    var emptyArray = []
+____________________
+  Object (0x100)
+  Type   |  Array
+RefCount |    1
+_________
+Location
+ 0x100
+
+!!!! FINISH CLASS 15 (Arrays & Dynamic Memory Address | Godot GDScript Tutorial | Ep 10.1) !!!!
+
+!!!! FINISH CLASS 15 (Strings (Basics of Memory) | Godot GDScript Tutorial | Ep 10.2) !!!!
+
+-------Enums(Enumeration)-------
+    Enums are a data type that contains a fixed set of constants, good at assigning consecutive integers. To declare it:
+    enum {left,right,front,back} #Globally named
+    #same as writting the following
+    const left = 0
+    const right = 1
+    const front = 2
+    const back = 3
+Another example:
+    enum {left,right,front = 10,back} #Globally named
+    #same as writting the following
+    const left = 0
+    const right = 1
+    const front = 10
+    const back = 3
+Another example:
+    # not globally set
+    enum MoveSet {left,right,front,back}
+    MoveSet.left #0
+
+-------Dictionaries-------
+    Dictionaries are associative container that contains values referenced by unique keys, also called a key-value store. The format is:
+    var <name> = {literal value:value }
+
+Examples:
+    var emptyDictionary = {}
+    var dictionaryContainer = {"name":"John"}
+    var anotherContainer = {1:"John"}
+    var complexContainer = {1:[1,2,3]}
+    #you can add other dictionaries inside your dictionary
+
+To access your Dictionary
+    dictionaryContainer["name"] #returns "John"
+    anotherContainer[1] #returns "John"
+
+To add key/value to existing Dictionary in Godot
+    dictionaryContainer.newKey = 100
+    dictionaryContainer["newKey"] = 100
+
+    dictionaryContainer[1] = 100 #you can add ints as a key
+
+    dictionary1 == dictionary2 # dictionary comparisons
+    #returns false, even if the key/value pair are the same in both dictionaries.
+
+    Dictionary1.hash() == dictionary2.hash() #use the hash method, this will return true if the hashes are the same, and false if they are different
+    dictionary1.clear() # clear a dictionary
+    dictionary1.erase("key") # remove a specific key
+
+-------Functions-------
+    A function is a block of organized, reusable code that is used to perform a single, related action. A function can go by different names in other languages: methods, procedures, sub-routines.
+    func <name>(<param>):
+        pass
+        # pass keyword does nothing except prevents compiler error from empty functions. Pass can also be used in loops to avoid the compiler errors as well.
+    func <name>(<param>):
+        pass #does nothing
+        var x = 100 #executes
+
+To create a basic function in godot
+    func nameOfFunction(param1):
+        pass
+        # Parameters are variables, they can be used in the function, and only in the function level that it's name is used in. Using the parameter name outside the function will throw an error.
+
+To create a function with parameters & data type
+    func nameOfFunction(param1:int):
+        pass
+
+To create a function with default value
+    func nameOfFunction(param1:=100):
+        pass
+        #data type is inferred by the default value
+
+To create a function with parameters & data type
+    func nameOfFunction(param1:int)
+        pass
+
+To create a function with specified return type
+    func nameOfFunction() -> int:
+        return 100
+        # anything after the return keyword (return statement), will stop the function and return back that value when the function is called
+
+To return keyword/statement
+    The return statement is used to terminate control of the function and 'returns' control back to the calling function.
+
+To create a function with specified return
+    func nameOfFunction() -> int:
+        return 10
+        # Functions with a return type must return that specific data type. the value of the specified data type must follow the return keyword.
+
+To create a void return type
+    Setting the return types as void, means that the function doesn't return back any value. To have a function satisft the void return type, simply type out the return keyword, followed by nothing, also called an expressionless return statement.
+
+-------Scope-------
+    Scope: Is the region of a computer program where name binding is valid. Scopes can vary in range, from small loops to as much as an entire application.
+    Name Binding: An association of a name to an entity, such as a variable.
+    1. Global Scope: A class, variable/value/function in the global scope that can be used anywhere in the entire program, extends Node (Node is globally accessible).
+    2. Function Scope: A variable/value that is only visible inside the function (params and var declarations).
+    3. Code Block Scope: A variable/value that is only visible inside code blocks, such as an if statement, match statement, for & while loops, etc.
+_________________________
+    Scope Hierarchy
+Global      | var a = 100
+File/Module | var b = 100
+Function    | var c = 100
+Code Block  | var d = 100
+
+-------Classes-------
+    Describes the contents of the objects that belong to it, it describes an aggregate of data fields, such as variables, and defines the operations, such as methods. Think of a class as a blueprint for creating objects, with initial value states, and implementation behavior.
+    By default, all script files are unnamed classes, this means you can only reference them by using the file's path name: using absolute or relative path.
+    Absolute Path: 'C:\Data\FilePatch', '/Users/name'
+    GDScript: 'res://rootOfGDScriptProject.gd'
+    Relative Path (Starts on folder of file): './FilePath.gd'
+    extends "res://name.gd"
+    var a = "./name.gd"
+    #imagine if folder hierarchy grows, there is a cleaner way.
+
+Register Scripts as Class
+    If you want to give a name to a class use the class_name keyword followed by a unique name. This will register your class name as a new type in Godot's editor. You can also add an icon image by using a comma followed by the image location.
+    class_name Player, "res://optionalPic.png"
+    You can use the new registered name in other scripts.
+    extends player #you can inherit the class
+    var a = Player.new() #create an instanced object
+
+Instancing a class
+# use the class function new to instance a class
+# it's build in to classes
+    var a = ClassName.new()
+
+Basic Class Format GDScript
+    #inherits Node, important ifused in a scene extends Node
+    var a = 100 #member variables
+    func_ready():
+        pass
+
+!!!! FINISH CLASS 21 (Classes | Godot GDScript Tutorial | Ep 15) !!!!
+
+-------Objects-------
+    Is an instance of a class, they are also referred to as a class instance, instanced object, or class object.
+
+-------Instantiation/Construction-------
+    Is the realization of a predefined object, an instance of an object may be declared, given a unique name, so that it may be used in a program.
+
+Instance Variables
+    Is a member variable in which each instantiated object of the class has a separate copy, or instance. This means that data changes to variables in one instanced object will not change in another.
+    If you declare a member variable with a fixed data type, the compiler will do it's best to type cast to the specified data type if you accidentally try to pass in a different data type. For example:
+    int -> String
+
+________________________  Object1 A = 100
+| Non-Static Variable:  /
+| Player Class A = 100  |
+|_______________________\
+                          Object2 A = 100
+
+When To Use Instanced Object
+    Good time to use instanced objects is when you want multiple items/copies of the class.
+
+Basic Class
+    # Enemy.gd
+    class_name Enemy #register name to editor
+    var a = 100
+    func printA():
+         print(a)
+
+Create Class Object
+    # SceneScript.gd
+    var objectOne = Enemy.new() #Class Name
+    #var loadClass = load("res://Enemy.gd") #File Path
+    #var objectTwo = loadClass.new()
+
+Using Class Object
+    # SceneScript.gd
+    var object = Enemy.new()
+    func_start():
+        object.printA() #prints '100' to console
+
+How to Make Objects Unique
+    Boring to have multiple objects with the same exact values, power of instances is variation in object properties, eg. Member variables. To make objects unique from other objects, simply use the built-in class constructor.
+
+Class Consctructor
+    Define and use the _init() method, the class constructor method is called on class instantation.
+
+Using Class Object
+
+
+    # Enemy.gd
+    func _init(param1)
+        pass
+        #will throw an error if you don't pass a para on object instantiation.
+
+
+    # Enemy.gd
+    func _init(param1=10) #default value assigned
+        pass
+        #multiple parameters allowed
+
+
+    # Enemy.gd
+    func _init(param1 := 10):
+        pass
+        #data type of param in inferred
+
+
+Create an Object, Pass Values to Construct
+    var a = Enemy.new(10) #class_name of other class
+    # var loadClass = load("res://Enemy.gd") #File Path
+    # var objectTwo = loadClass.new(10)
+
