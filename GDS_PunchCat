@@ -1,0 +1,32 @@
+PUNCH CAT (0.0)
+
+Game Genre: Arcade, High Score
+Game Artstyle: 90's, Street Style
+Character: Alien Cat (Teen)
+
+-------------SPRITES-------------
+Character Sprites:
+    1.0 Intro: Preparing Shoulders
+    2.0 Idle: Preparing Punch
+    3.0 Punch (Three Types):
+        3.1 Bad Punch
+        3.2 Good Punch
+        3.3 Best Punch
+    4.0 Punch Rewind
+    5.0 Winning (Smiling)
+    6.0 Meh (Tedious)
+    7.0 Losing (Got Hand Hurt)
+
+Background Sprites:
+    1.0 Street
+
+Punching Bag Sprites:
+    1.0 Idle
+    2.0 Getting Hit
+    3.0 Falling
+
+-------------Future Ideas-------------
+Rhythm Game
+New Characters
+New Accessories
+New Backgrounds
